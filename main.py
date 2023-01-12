@@ -43,8 +43,8 @@ class Prompts:
     def ask_questions(self, chapter: int):
         self._current_chapter = chapter
         for prompt in PROMPTS:
-            prompt = prompt.format("Chapter " + chapter)
-            print(prompt)
+            prompt = prompt.format("Chapter {}".format(chapter))
+            print(prompt + "\n")
             response = bot.ask(prompt)
             print(response)
             if response:
@@ -52,11 +52,10 @@ class Prompts:
             else:
                 print(f"Failed to find an answer to: {prompt}")
 
-    def __save_answers(self, question: str, answer: str):
-        if not os.path.exists("chapters"):
-            os.makedirs("chapters")
-        os.chdir("chapters")
-        with open(f"{self._current_chapter}.txt", "w") as file:
+    def __save_answers(self, question: str, answer: str, mode = "w"):
+        if os.path.exists(f"{self._current_chapter}.txt"):
+            mode = "a"
+        with open(f"{self._current_chapter}.txt", mode) as file:
             file.write(question + "\n")
             file.write(answer + "\n\n")
 
@@ -78,15 +77,18 @@ def multicore_get_chapters(chapters: int, cpu_count: int):
 
 if __name__ == "__main__":
     bot = ChatGPT()
-    # multicore_support = enable_multicore(autoenable=False, maxcores=None, buffercores=1)
+    multicore_support = enable_multicore(autoenable=False, maxcores=None, buffercores=1)
     chapters = int(input("How many chapters do you want to scrape?(0-50): "))
 
     print("Initiating conversation...")
     response = bot.ask("I will ask you questions regarding the book 'The Great Expectations' (1998) by Charles Dickens")
     print(response)
     prompts = Prompts(chapters)
-    for chapter in range(1, chapters + 1):
-        prompts.ask_questions(chapter)
+    if not os.path.exists("chapters"):
+        os.makedirs("chapters")
+    os.chdir("chapters")
+    # for chapter in range(1, chapters + 1):
+    #     prompts.ask_questions(chapter)
 
-    # if multicore_support > 1:
-    #     multicore_get_chapters(chapters, multicore_support)
+    if multicore_support > 1:
+        multicore_get_chapters(chapters, multicore_support)
