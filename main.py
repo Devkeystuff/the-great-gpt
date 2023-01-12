@@ -41,7 +41,7 @@ def save_answers(chapter: str, question: str, answer: str, mode = "w"):
 
 if __name__ == "__main__":
     bot = ChatGPT()
-    chapter_interval = input("How many chapters do you want to scrape?(0-50): ")
+    chapter_interval = input("How many chapters do you want to scrape?(e.g. 1-50): ")
     start, end = [int(chapter) for chapter in chapter_interval.split("-")]
 
     print("Initiating conversation...")
