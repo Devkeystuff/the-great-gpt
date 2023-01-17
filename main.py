@@ -2,6 +2,9 @@ import os
 
 from chatgpt_wrapper import ChatGPT
 
+from bs4 import BeautifulSoup
+import re
+
 PROMPTS = [
     "Summarize {}",
     "Describe the location where the action takes place in {}",
@@ -13,8 +16,29 @@ PROMPTS = [
 ]
 
 def ask_questions(chapter: int):
+    #chapter that we will make chatgpt read
+    chptr = ""
+
+    #fetch raw chapter text
+    with open('../great_expectation.htm', 'r') as f:
+
+        #read page
+        contents = f.read()
+
+        #parse page
+        soup = BeautifulSoup(contents, 'html.parser')
+
+        #find chapter
+        chap = soup.find("a", {"name": "chap{0}".format(str(chapter).zfill(2))})
+
+        #get text of chapter parent parent element that holds <p> elements with chapter text
+        chptr = """ here: "{0}" can I ask you some questions about this chapter? """.format(chap.parent.parent.get_text())
+
+    response = bot.ask(chptr)
+    print(response)
+    
     for prompt in PROMPTS:
-        prompt = prompt.format("Chapter {}".format(chapter))
+        prompt = prompt.format("this chapter")
         if os.path.exists(f"{chapter}.txt"):
             with open(f"{chapter}.txt", "r") as file:
                 prompt_exists = False
@@ -41,11 +65,11 @@ def save_answers(chapter: str, question: str, answer: str, mode = "w"):
 
 if __name__ == "__main__":
     bot = ChatGPT()
-    chapter_interval = input("How many chapters do you want to scrape?(e.g. 1-50): ")
+    chapter_interval = input("Which chapters do you want to scrape?(e.g. 1-50): ")
     start, end = [int(chapter) for chapter in chapter_interval.split("-")]
 
     print("Initiating conversation...")
-    response = bot.ask("I will ask you questions regarding the book 'The Great Expectations' (1998) by Charles Dickens")
+    response = bot.ask("Can I give you a chapter from a book and then ask some questions about it?")
     print(response)
     if not os.path.exists("chapters"):
         os.makedirs("chapters")
