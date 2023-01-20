@@ -6,3 +6,4 @@ Pygments==2.14.0
 pyreadline3==3.4.1
 rich==13.0.1
 typing-extensions==4.4.0
+bs4==0.0.1

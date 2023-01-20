@@ -4,7 +4,7 @@ The ultimate aid to the most notorious task known to human ('The Great Expectati
 
 ## Clone
 
-    git clone git@github.com:Devkeystuff/the-great-gpt.git
+    git clone git@github.com:smudd/the-great-gpt.git
 
 ## Requirements
 
